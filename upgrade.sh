@@ -69,7 +69,7 @@ case "$1" in
 		;;  
 		
 	*)
-		echo "usage: $0 [start|stop|restart] [dev|test|prod]"
+		echo "usage: $0 [start|stop|restart]"
 		;;  
 esac
 

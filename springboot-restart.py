@@ -8,12 +8,12 @@ import time
 
 
 HOSTS=['10.254.128.126']
-jenkins_package='chunbo-dps-web-uat-deploy'
-projectname='chunbo-dps-web'
-servername='springboot-dps-web'
-server_port='8088'
-redis_version='chunbo_dps_web_uat_version'
-pass_key='root_pass_uat'
+jenkins_package=
+projectname=''
+servername=''
+server_port=''
+redis_version=''
+pass_key=''
 
 dir = '/data/%s/uat' % projectname
 mkcmd = 'mkdir -p %s' % dir
