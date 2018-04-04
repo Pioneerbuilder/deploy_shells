@@ -6,16 +6,18 @@ import os
 import redis
 import time
 
-
-HOSTS=['10.254.128.126']
-jenkins_package=
+HOSTS=['']
+env=''
+jenkins_package='' % env
 projectname=''
 servername=''
 server_port=''
+spring_profile_active=''
+logging_file='/'
 redis_version=''
 pass_key=''
 
-dir = '/data/%s/uat' % projectname
+dir = '/data/%s/%s' % (projectname, env)
 mkcmd = 'mkdir -p %s' % dir
 rmcmd = 'rm -rf %s/*' % dir
 if not os.path.exists(dir):
@@ -23,7 +25,7 @@ if not os.path.exists(dir):
 else:
     call(rmcmd, shell=True)
 
-cmd = "cp -r /var/lib/jenkins/workspace/%s/%s/target/%s* /data/%s/uat" %(jenkins_package,projectname,projectname,projectname)
+cmd = "cp -r /var/lib/jenkins/workspace/%s/%s/target/%s\.jar /data/%s/%s" %(jenkins_package, projectname, projectname, projectname, env)
 call(cmd, shell=True)
 
 
@@ -34,7 +36,7 @@ if not pre_version:
 cur_version = str(int(pre_version)+1)
 cur_version_str = '.'.join(cur_version)
 
-print'cur_version_str:%s'%cur_version_str
+print'cur_version_str:%s' % cur_version_str
 
 print '***************** pre_version of redis is %s *****************' % pre_version
 
@@ -43,7 +45,7 @@ root_pass = r.get('%s' % pass_key)
 
 try:
     for host in HOSTS:
-        cmd='rsync -vzrtopg --progress --delete /data/%s/uat/ jenkins@%s:/home/jenkins/%s/' % (projectname,host,projectname)
+        cmd='rsync -vzrtopg --progress --delete /data/%s/%s/ jenkins@%s:/home/jenkins/%s/' % (projectname, env, host, projectname)
         call(cmd, shell=True)
         time.sleep(5)
 
@@ -62,18 +64,20 @@ try:
         time.sleep(1)
         
         print 'restart %s %s' %(host,servername)
-        print 'export VERSION=%s && export SERVER_PORT=%s && /data/%s/bin/upgrade.sh restart' % (cur_version_str, server_port, servername)
+        print 'export VERSION=%s && export SERVICE_NAME=%s && export SERVER_PORT=%s && export SPRING_PROFILES_ACTIVE=%s && export LOGGING_FILE=%s && /data/%s/bin/upgrade.sh restart'\
+        % (cur_version_str, projectname, server_port, spring_profile_active, logging_file, servername)
         
-        NULL,stdout,errout =ssh.exec_command('export VERSION=%s && export SERVER_PORT=%s && /data/%s/bin/upgrade.sh restart' % (cur_version_str, server_port, servername))
+        NULL,stdout,errout =ssh.exec_command('export VERSION=%s && export SERVICE_NAME=%s && export SERVER_PORT=%s && export SPRING_PROFILES_ACTIVE=%s && export LOGGING_FILE=%s && /data/%s/bin/upgrade.sh restart'\
+        % (cur_version_str, projectname, server_port, spring_profile_active, logging_file, servername))
         for value in stdout:
             print '%s %s' % (host,value)
         
-        print '***************** sleep 15S for tomcat startup on%s *****************' %host
-        #time.sleep(30)
+        print '***************** sleep 15S for tomcat startup on %s *****************' %host
+        #time.sleep(15)
         
         ssh.close()
         
-    print '***************** reset %s_uat of redis by %s *****************' % (projectname, cur_version_str)
+    print '***************** reset %s-%s of redis by %s *****************' % (projectname, env, cur_version_str)
 
     r.set('%s' % redis_version ,cur_version)
 

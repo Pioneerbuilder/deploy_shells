@@ -1,11 +1,8 @@
 #!/bin/sh
 
 ## change here
-SERVICE_NAME=chunbo-dps-web
-SERVICE_DIR=/projects/${SERVICE_NAME}
-
 JAVA_OPTS="-Xms400m -Xmx400m -Xmn300m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xverify:none -XX:+DisableExplicitGC -Djava.awt.headless=true"
-SPRING_BOOT_OPTS=" --server.port=${SERVER_PORT} --logging.file=../dpslog/dps-web.log"
+SPRING_BOOT_OPTS=" -Dserver.port=${SERVER_PORT} -Dlogging.file=${LOGGING_FILE} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}"
 
 this_dir="$( cd "$( dirname "$0"  )" && pwd )"
 parent_dir=`dirname "${this_dir}"`
@@ -30,7 +27,9 @@ case "$1" in
 			then
 				SPRING_PROFILES_ACTIVE=$2
 			fi
-			exec nohup ${JRE_HOME}/bin/java $JAVA_OPTS -jar ${SERVICE_DIR}/${VERSION}/${SERVICE_NAME}\.jar ${SPRING_BOOT_OPTS} >"${log_file}" &
+			echo "exec nohup ${JRE_HOME}/bin/java $JAVA_OPTS -jar /projects/${SERVICE_NAME}/${VERSION}/${SERVICE_NAME}\.jar ${SPRING_BOOT_OPTS} >"${log_file}" &"
+			exec nohup ${JRE_HOME}/bin/java $JAVA_OPTS -jar /projects/${SERVICE_NAME}/${VERSION}/${SERVICE_NAME}\.jar ${SPRING_BOOT_OPTS} >"${log_file}" &
+			sleep 3
 			start_flag=`ps -ef | grep -w "${SERVICE_NAME}" |grep -w "java"| grep -v "grep" | awk '{print $2}'`
 			if [ "${start_flag}" != "" ];
 			then
