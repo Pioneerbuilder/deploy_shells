@@ -23,17 +23,13 @@ case "$1" in
 		if [ "${procedure}" = "" ];
 		then
 			echo "start ..."
-			if [ "$2" != "" ];
-			then
-				SPRING_PROFILES_ACTIVE=$2
-			fi
 			echo "exec nohup ${JRE_HOME}/bin/java $JAVA_OPTS -jar /projects/${SERVICE_NAME}/${VERSION}/${SERVICE_NAME}\.jar ${SPRING_BOOT_OPTS} >"${log_file}" &"
 			exec nohup ${JRE_HOME}/bin/java $JAVA_OPTS -jar /projects/${SERVICE_NAME}/${VERSION}/${SERVICE_NAME}\.jar ${SPRING_BOOT_OPTS} >"${log_file}" &
 			sleep 3
-			start_flag=`ps -ef | grep -w "${SERVICE_NAME}" |grep -w "java"| grep -v "grep" | awk '{print $2}'`
-			if [ "${start_flag}" != "" ];
+			pid=`ps -ef | grep -w "${SERVICE_NAME}" |grep -w "java"| grep -v "grep" | awk '{print $2}'`
+			if [ "${pid}" != "" ];
 			then
-				echo "start ${SERVICE_NAME} success"
+				echo "start ${SERVICE_NAME} with pid: ${pid}"
 			else
 				echo "start ${SERVICE_NAME} not success"
 			fi
@@ -64,7 +60,7 @@ case "$1" in
 	restart)
 		$0 stop
 		sleep 1
-		$0 start $2
+		$0 start
 		;;  
 		
 	*)

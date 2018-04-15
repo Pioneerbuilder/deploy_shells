@@ -63,7 +63,7 @@ try:
                 print 'Tomcat stopped successfully'
                 break
         if not stopFlag:
-            flag =True
+            flag = True
             for i in range(10):
                 if not flag:
                     print 'stop-force successfully'
@@ -86,9 +86,7 @@ try:
         print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
         time.sleep(1)
         ssh.exec_command('rm -rf  /data/%s/webapps/%s && ln -s /projects/%s/%s /data/%s/webapps/%s' % (servername,projectname,projectname,cur_version_str,servername,projectname))
-        print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
         time.sleep(1)
-        print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
         ssh.exec_command('export JAVA_HOME=/usr/java/jdk1.7.0_80 && /data/%s/bin/startup.sh' % servername)
         print time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
         
@@ -98,7 +96,7 @@ try:
         
         ssh.close()
         
-    print '***************** reset chunbo_rwms_order_dubbo_version of redis by %s *****************' % cur_version_str
+    print '***************** reset %s of redis by %s *****************' % (redis_version,cur_version_str)
 
     r.set('%s' % redis_version ,cur_version)
 

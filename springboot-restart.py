@@ -73,7 +73,7 @@ try:
             print '%s %s' % (host,value)
         
         print '***************** sleep 15S for tomcat startup on %s *****************' %host
-        #time.sleep(15)
+        time.sleep(15)
         
         ssh.close()
         
