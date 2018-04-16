@@ -6,3 +6,5 @@ netstat -ntulp |grep 80
 
 vim ~/.bashrc
 source ~/.bashrc
+
+git branch | grep test | xargs git push origin --delete
